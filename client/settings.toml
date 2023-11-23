@@ -1,2 +1,2 @@
-URL_FECHA_SORTEO="https://resultadosquiniela.cajapopular.gov.ar/api/extracto/?fecha_sorteo="
-URL_EXTRACTO_SORTEO="https://resultadosquiniela.cajapopular.gov.ar/api/extracto-registro/?id="
+URL_FECHA_SORTEO = "https://resultadosquiniela.cajapopular.gov.ar/api/extracto/?fecha_sorteo="
+URL_EXTRACTO_SORTEO = "https://resultadosquiniela.cajapopular.gov.ar/api/extracto-registro/?id="

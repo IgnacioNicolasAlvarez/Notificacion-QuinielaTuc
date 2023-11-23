@@ -1,13 +1,34 @@
 import pymongo
 from config import settings
 from datetime import datetime
+import os
 
 
 class MongoDBPersister:
-    def __init__(self):
-        self.client = pymongo.MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
-        self.db = self.client[settings.MONGO_DB_NAME]
-        self.collection = self.db[settings.MONGO_COLLECTION_NAME]
+    def __init__(self, is_truncate: bool = False):
+        host = (
+            os.getenv("MONGO_HOST") if os.getenv("MONGO_HOST") else settings.MONGO_HOST
+        )
+        port = (
+            os.getenv("MONGO_PORT") if os.getenv("MONGO_PORT") else settings.MONGO_PORT
+        )
+        db_name = (
+            os.getenv("MONGO_DB_NAME")
+            if os.getenv("MONGO_DB_NAME")
+            else settings.MONGO_DB_NAME
+        )
+        collection_name = (
+            os.getenv("MONGO_COLLECTION_NAME")
+            if os.getenv("MONGO_COLLECTION_NAME")
+            else settings.MONGO_COLLECTION_NAME
+        )
+
+        self.client = pymongo.MongoClient(host, port)
+        self.db = self.client[db_name]
+        self.collection = self.db[collection_name]
+
+        if is_truncate:
+            self.collection.drop()
 
     def persist_object(self, data):
         document = {
