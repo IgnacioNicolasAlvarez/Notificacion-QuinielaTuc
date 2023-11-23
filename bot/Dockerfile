@@ -1,14 +1,14 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 RUN adduser --disabled-password --gecos '' pyuser
 USER pyuser
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY . .
+COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV PYTHONUNBUFFERED 1
+COPY . .
 
-CMD ["python", "scheduler.py"]
+CMD ["python", "main.py"]

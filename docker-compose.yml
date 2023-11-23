@@ -17,6 +17,22 @@ services:
       - database
     command: python scheduler.py
 
+  bot:
+    build:
+      context: ./bot
+    volumes:
+      - ./bot:/app
+    env_file:
+      - .env
+    environment:
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME}
+    depends_on:
+      - database
+    command: python main.py
+
   database:
     build:
       context: ./database
