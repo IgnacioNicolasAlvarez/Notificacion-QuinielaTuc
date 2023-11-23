@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  client:
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+    env_file:
+      - .env
+    environment:
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME}
+    depends_on:
+      - database
+    command: python scheduler.py
+
+  database:
+    build:
+      context: ./database
+    volumes:
+      - ./database/data:/data/db
+    ports:
+      - "27017:27017"
+    command: mongod
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_MONGODB_PORT: 27017
+

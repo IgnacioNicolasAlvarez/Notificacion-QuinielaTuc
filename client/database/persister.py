@@ -9,7 +9,7 @@ class MongoDBPersister:
         host = (
             os.getenv("MONGO_HOST") if os.getenv("MONGO_HOST") else settings.MONGO_HOST
         )
-        port = (
+        port = int(
             os.getenv("MONGO_PORT") if os.getenv("MONGO_PORT") else settings.MONGO_PORT
         )
         db_name = (
