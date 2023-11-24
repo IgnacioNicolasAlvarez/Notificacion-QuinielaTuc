@@ -9,7 +9,7 @@ def run_main():
     run(["python3", "main.py"])
 
 
-schedule.every(30).minutes.do(run_main)
+schedule.every(2).minutes.do(run_main)
 
 while True:
     schedule.run_pending()

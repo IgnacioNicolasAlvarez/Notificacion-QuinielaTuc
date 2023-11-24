@@ -28,7 +28,7 @@ class MongoDBPersister:
 
     def get_objects(self, filter_date, filter_option):
         query = {
-           #"fecha_creacion": filter_date,
+            # "fecha_creacion": filter_date,
             "tipo_sorteo": filter_option,
         }
         return self.collection.find(query)

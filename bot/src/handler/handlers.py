@@ -59,7 +59,9 @@ async def select_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 async def option_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chosen_option = update.message.text
-    selected_date = context.user_data.get("selected_date")  # Asegúrate de que esta clave coincida con la usada en otros handlers
+    selected_date = context.user_data.get(
+        "selected_date"
+    )  # Asegúrate de que esta clave coincida con la usada en otros handlers
 
     # Crear una instancia de MongoDBPersister y realizar una consulta
     mongo_persister = MongoDBPersister()

@@ -4,6 +4,12 @@ from typing import Optional
 
 import typer
 from typing_extensions import Annotated
+import logging
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 
 def main(

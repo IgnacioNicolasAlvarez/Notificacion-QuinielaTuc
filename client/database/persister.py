@@ -2,6 +2,7 @@ import pymongo
 from config import settings
 from datetime import datetime
 import os
+import logging
 
 
 class MongoDBPersister:
@@ -12,8 +13,8 @@ class MongoDBPersister:
             else (
                 datetime.strftime(
                     datetime.now(),
-                    "Y-%m-%d",
-                ),
+                    "%Y-%m-%d",
+                )
             )
         )
 
@@ -42,6 +43,7 @@ class MongoDBPersister:
 
     def truncate_collection_by_date(self, truncate_date: str) -> int:
         result = self.collection.delete_many({"fecha_creacion": truncate_date})
+        logging.info(f"Truncated {result.deleted_count} documents")
         return result.deleted_count
 
     def persist_object(self, data):
@@ -50,7 +52,7 @@ class MongoDBPersister:
             "extracto": data.get("extracto"),
             "fecha_creacion": datetime.strftime(
                 datetime.strptime(data.get("fecha_creacion"), "%Y-%m-%dT%H:%M:%S.%f"),
-                "Y-%m-%d",
+                "%Y-%m-%d",
             ),
             "posicion": data.get("posicion"),
             "numero": data.get("numero"),
