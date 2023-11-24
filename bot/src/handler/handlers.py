@@ -12,6 +12,8 @@ from telegram.ext import (
     ConversationHandler,
 )
 
+from src.database.persister import MongoDBPersister
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_keyboard = [["Hoy", "Elegir fecha"]]
@@ -45,9 +47,11 @@ async def input_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def select_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    reply_keyboard = [["A", "B", "C", "D", "E"]]
+    reply_keyboard = [
+        ["MATUTINO", "VESPERTINO", "DE LA SIESTA", "DE LA TARDE", "NOCTURNO"]
+    ]
     await update.message.reply_text(
-        "Elige una opción: A, B, C, D o E",
+        "Elige una opción: MATUTINO, VESPERTINO, DE LA SIESTA, DE LA TARDE o NOCTURNO",
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True),
     )
     return OPTION_CHOSEN
@@ -55,8 +59,19 @@ async def select_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 async def option_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chosen_option = update.message.text
-    context.user_data["selected_option"] = chosen_option
-    await update.message.reply_text(f"Opción seleccionada: {chosen_option}")
+    selected_date = context.user_data.get("selected_date")  # Asegúrate de que esta clave coincida con la usada en otros handlers
+
+    # Crear una instancia de MongoDBPersister y realizar una consulta
+    mongo_persister = MongoDBPersister()
+    results = mongo_persister.get_objects(selected_date, chosen_option)
+
+    message = f"Opción seleccionada: {chosen_option}\nResultados:\n"
+    for result in results:
+        message += f"{result}\n"  # Formatea esto según la estructura de tus documentos en MongoDB
+
+    await update.message.reply_text(message)
+
+    mongo_persister.close_connection()  # Cerrar la conexión a la base de datos
     return ConversationHandler.END
 
 
