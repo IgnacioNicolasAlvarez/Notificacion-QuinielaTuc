@@ -5,7 +5,18 @@ import os
 
 
 class MongoDBPersister:
-    def __init__(self, is_truncate: bool = False):
+    def __init__(self, truncate_date: str = None):
+        truncate_date = (
+            truncate_date
+            if truncate_date
+            else (
+                datetime.strftime(
+                    datetime.now(),
+                    "Y-%m-%d",
+                ),
+            )
+        )
+
         host = (
             os.getenv("MONGO_HOST") if os.getenv("MONGO_HOST") else settings.MONGO_HOST
         )
@@ -27,18 +38,23 @@ class MongoDBPersister:
         self.db = self.client[db_name]
         self.collection = self.db[collection_name]
 
-        if is_truncate:
-            self.collection.drop()
+        self.truncate_collection_by_date(truncate_date)
+
+    def truncate_collection_by_date(self, truncate_date: str) -> int:
+        result = self.collection.delete_many({"fecha_creacion": truncate_date})
+        return result.deleted_count
 
     def persist_object(self, data):
         document = {
             "id_sorteo": data.get("id"),
             "extracto": data.get("extracto"),
-            "fecha_creacion": datetime.strptime(
-                data.get("fecha_creacion"), "%Y-%m-%dT%H:%M:%S.%f"
+            "fecha_creacion": datetime.strftime(
+                datetime.strptime(data.get("fecha_creacion"), "%Y-%m-%dT%H:%M:%S.%f"),
+                "Y-%m-%d",
             ),
             "posicion": data.get("posicion"),
             "numero": data.get("numero"),
+            "tipo_sorteo": data.get("tipo_sorteo"),
         }
         result = self.collection.insert_one(document)
         return result.inserted_id
