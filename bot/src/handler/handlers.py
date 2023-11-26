@@ -13,6 +13,7 @@ from telegram.ext import (
 )
 
 from src.database.persister import MongoDBPersister
+from src.view.formatter import format_results_for_telegram
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -59,21 +60,16 @@ async def select_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 async def option_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chosen_option = update.message.text
-    selected_date = context.user_data.get(
-        "selected_date"
-    )  # Asegúrate de que esta clave coincida con la usada en otros handlers
+    selected_date = context.user_data.get("selected_date")
 
-    # Crear una instancia de MongoDBPersister y realizar una consulta
     mongo_persister = MongoDBPersister()
     results = mongo_persister.get_objects(selected_date, chosen_option)
 
-    message = f"Opción seleccionada: {chosen_option}\nResultados:\n"
-    for result in results:
-        message += f"{result}\n"  # Formatea esto según la estructura de tus documentos en MongoDB
+    message = format_results_for_telegram(results, chosen_option, selected_date)
 
-    await update.message.reply_text(message)
+    await update.message.reply_html(message)
 
-    mongo_persister.close_connection()  # Cerrar la conexión a la base de datos
+    mongo_persister.close_connection()
     return ConversationHandler.END
 
 

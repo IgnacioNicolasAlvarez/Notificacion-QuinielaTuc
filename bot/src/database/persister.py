@@ -28,10 +28,12 @@ class MongoDBPersister:
 
     def get_objects(self, filter_date, filter_option):
         query = {
-            # "fecha_creacion": filter_date,
+            "fecha_creacion": filter_date,
             "tipo_sorteo": filter_option,
         }
-        return self.collection.find(query)
+        results = self.collection.find(query).sort("posicion", 1)
+
+        return results
 
     def close_connection(self):
         self.client.close()
